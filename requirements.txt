@@ -3,3 +3,4 @@ scikit-learn == 1.9.0
 google-cloud-vision==3.15.0
 google-auth==2.55.1
 pydub==0.25.1
+st-annotated-text==4.0.2
