@@ -105,6 +105,7 @@ if st.session_state["profile"] is None:
 else:
     input_placeholder = "技術的な質問やクイズの回答を入力してください"
 
+
 message = st.chat_input(input_placeholder)
 
 if message:
@@ -124,37 +125,34 @@ if message:
                 "content": f"私のプロフィールは次のとおりです。\n{message}",
             }
         )
-    profile_reply = (
-        "プロフィールを登録しました。"
-        "次の入力から、技術的な質問やクイズへの回答を入力してください。"
-    )
-    st.session_state["log"].append(
-        {"role": "assistant", "content": profile_reply}
-    )
-    # 状態更新後に画面全体を再実行
-    st.rerun()
-    # 2回目以降の入力：通常のチャット
-else:
-    st.session_state["log"].append(
-        {"role": "user", "content": message}
-    )
-    try:
-        # チャット送信と返信の取得
-        completion = client.chat.completions.create(
-            messages=st.session_state["log"],
-            max_tokens=500,
+        profile_reply = (
+            "プロフィールを登録しました。"
+            "次の入力から、技術的な質問やクイズへの回答を入力してください。"
         )
-        reply = completion.choices[0].message.content
-        # オフラインテスト用コード、上の5行をコメントアウトして↓のコードを代わりに実行
-        # reply = "これはテスト返信です"
         st.session_state["log"].append(
-            {"role": "assistant", "content": reply}
+            {"role": "assistant", "content": profile_reply}
         )
+        # 状態更新後に画面全体を再実行
         st.rerun()
-    except HfHubHTTPError as e:
-        print(e)
-        st.warning(
-            "⚠️ モデルが大忙しのようです。"
-            "しばらくしてからもう一度試してください。"
+    # 2回目以降の入力：通常のチャット
+    else:
+        st.session_state["log"].append(
+            {"role": "user", "content": message}
         )
-
+        try:
+            # チャット送信と返信の取得
+            completion = client.chat.completions.create(
+                messages=st.session_state["log"],
+                max_tokens=500,
+            )
+            reply = completion.choices[0].message.content
+            st.session_state["log"].append(
+                {"role": "assistant", "content": reply}
+            )
+            st.rerun()
+        except HfHubHTTPError as e:
+            print(e)
+            st.warning(
+                "⚠️ モデルが大忙しのようです。"
+                "しばらくしてからもう一度試してください。"
+            )
